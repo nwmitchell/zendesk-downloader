@@ -27,18 +27,18 @@ def splitext(path):
 		ext = ".txt"
     return path, ext[1:]
 
-def get_updated_tickets(url, user, password, start_time):
+def get_updated_tickets(base_url, user, password, start_time):
 	ticket_list = []
-	url = "{0}/api/v2/incremental/tickets.json?start_time={1}".format(url, start_time.strftime("%s"))
+	url = "{0}/api/v2/incremental/tickets.json?start_time={1}".format(base_url, start_time.strftime("%s"))
 	#result = zenpy.tickets.incremental(start_time=start_time)
 	result = requests.get(url, auth=(user, password)).json()
 	for ticket in result['tickets']:
 		ticket_list.append(ticket['id'])
 	return ticket_list
 
-def get_case_info(url, user, password, ticket_id):
+def get_case_info(base_url, user, password, ticket_id):
 	case_info = {}
-	url = "{0}/api/v2/tickets/{1}.json".format(url, ticket_id)
+	url = "{0}/api/v2/tickets/{1}.json".format(base_url, ticket_id)
 	result = requests.get(url, auth=(user, password)).json()
 	if "error" in result:
 		case_info['error'] = result['error']
@@ -47,7 +47,7 @@ def get_case_info(url, user, password, ticket_id):
 		case_info['org_id'] = result['ticket']['organization_id']
 
 		if case_info['org_id'] != "None":
-			url = "{0}/api/v2/organizations/{1}.json".format(url, case_info['org_id'])
+			url = "{0}/api/v2/organizations/{1}.json".format(base_url, case_info['org_id'])
 			result = requests.get(url, auth=(user, password)).json()
 			if "error" in result:
 				case_info['org_name'] = "None"
@@ -62,9 +62,9 @@ def get_case_info(url, user, password, ticket_id):
 				case_info['org_name'] = org_name
 	return case_info
 
-def get_attachment_list(url, user, password, ticket_id):
+def get_attachment_list(base_url, user, password, ticket_id):
 	attachment_list = []
-	url = "{0}/api/v2/tickets/{1}/comments.json".format(url, ticket_id)
+	url = "{0}/api/v2/tickets/{1}/comments.json".format(base_url, ticket_id)
 	result = requests.get(url, auth=(user, password)).json()
 	for comment in result['comments']:
 		if comment['attachments']:
@@ -115,9 +115,9 @@ def extract_file(attachment, directory="."):
 	else:
 		print "        Not a cl_support, will not extract"
 
-def download_attachments(url, user, password, ticket_id, directory):
+def download_attachments(base_url, user, password, ticket_id, directory):
 	print "CS#{0}".format(ticket_id)
-	attachment_list = get_attachment_list(url, user, password, ticket_id)
+	attachment_list = get_attachment_list(base_url, user, password, ticket_id)
 	if attachment_list:
 		for attachment in attachment_list:
 			download_file(attachment, directory)
@@ -136,7 +136,7 @@ if __name__ == "__main__":
 	config.read(arguments['--config'])
 	user = config.get('Credentials', 'user')
 	password = config.get('Credentials', 'password')
-	url = config.get('Credentials', 'url')
+	base_url = config.get('Credentials', 'url')
 	download_directory = config.get('Downloader', 'download_directory')
 	if "~" in download_directory:
 		pattern = re.compile('~')
@@ -145,20 +145,20 @@ if __name__ == "__main__":
 	if '{0}'.format(arguments['--case']) == 'None':
 		print "No case specified, downloading attachments for all cases with updates in the last {0} hours".format(arguments['--recent'])
 		start_time = datetime.datetime.now() - datetime.timedelta(hours=int(arguments['--recent']))
-		updated_tickets =  get_updated_tickets(url, user, password, start_time)
+		updated_tickets =  get_updated_tickets(base_url, user, password, start_time)
 		for ticket in updated_tickets:
-			case_info = get_case_info(url, user, password, ticket)
+			case_info = get_case_info(base_url, user, password, ticket)
 			if not "error" in case_info:
 				case_dir = "{0}{1}_{2}_{3}".format(download_directory, case_info['id'], case_info['org_name'], case_info['org_id'])
-				download_attachments(url, user, password, ticket, case_dir)
+				download_attachments(base_url, user, password, ticket, case_dir)
 			else:
 				print "    ERROR: {0}".format(case_info['error'])
 	else:
 		ticket = arguments['--case']
-		case_info = get_case_info(url, user, password, ticket)
+		case_info = get_case_info(base_url, user, password, ticket)
 		if not "error" in case_info:
 			case_dir = "{0}{1}_{2}_{3}".format(download_directory, case_info['id'], case_info['org_name'], case_info['org_id'])
-			download_attachments(url, user, password, ticket, case_dir)
+			download_attachments(base_url, user, password, ticket, case_dir)
 		else:
 			print "CS#{0} -- ERROR: {1}".format(ticket, case_info['error'])
 	print case_dir
