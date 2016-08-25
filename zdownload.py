@@ -156,6 +156,7 @@ if __name__ == "__main__":
 	else:
 		ticket = arguments['--case']
 		case_info = get_case_info(base_url, user, password, ticket)
+		case_info['org_name'] = case_info['org_name'].replace("+","")
 		if not "error" in case_info:
 			case_dir = "{0}{1}_{2}_{3}".format(download_directory, case_info['id'], case_info['org_name'], case_info['org_id'])
 			download_attachments(base_url, user, password, ticket, case_dir)
