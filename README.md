@@ -1,6 +1,12 @@
 # zendesk-downloader
 Download attachments associated with cases in Zendesk
 
+## Pre-reqs
+ - pip via brew (OSX) or another method
+ - requests - ```pip install requests```
+ - docopts - ```pip install docopt```
+
+## Usage
 ```
 Usage:
     download.py [options]
@@ -20,5 +26,5 @@ password = password
 url = https://company.zendesk.com
 
 [Downloader]
-download_directory = ~/Zendesk
+download_directory = ~/Zendesk/
 ```
