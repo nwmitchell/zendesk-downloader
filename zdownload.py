@@ -53,6 +53,7 @@ def get_case_info(base_url, user, password, ticket_id):
 				case_info['org_name'] = "None"
 			else:
 				org_name = result['organization']['name']
+				#print org_name
 				# TODO: replace search and replace with regex pattern replace
 				#pattern = re.compile['[ .,()\{\}[]!@#$%^&+*=~<>?]']
 				#org_name = pattern.sub('', result['organization']['name'])
@@ -108,7 +109,7 @@ def extract_file(attachment, directory="."):
 		if not os.path.exists("{0}/{1}".format(directory, filename)):
 			print "        Extracting..."
 			local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
-			cmd = "tar xf {0}/{1} -C {2}".format(directory, local_filename, directory)
+			cmd = "tar xf {0}/{1} -C {2} --exclude 'lastlog'".format(directory, local_filename, directory)
 			subprocess.call(cmd,shell=True)
 		else:
 			print "        Already extracted"
