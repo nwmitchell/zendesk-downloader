@@ -113,6 +113,12 @@ def extract_file(attachment, directory="."):
 			subprocess.call(cmd,shell=True)
 		else:
 			print "        Already extracted"
+	elif file_extension == "tar":
+        	if not os.path.exists("{0}/{1}".format(directory, filename)):
+			print "        Extracting..."
+			local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
+			cmd = "tar xf {0}/{1} -C {2}".format(directory, local_filename, directory)
+			subprocess.call(cmd,shell=True)
 	else:
 		print "        Not a cl_support, will not extract"
 
@@ -139,6 +145,20 @@ if __name__ == "__main__":
 	password = config.get('Credentials', 'password')
 	base_url = config.get('Credentials', 'url')
 	download_directory = config.get('Downloader', 'download_directory')
+	try:
+		run_open = config.get('Downloader', 'run_open')
+		if run_open == "True" or run_open == "true" or run_open == "1":
+        		run_open = True
+		else:
+			run_open = False
+	except:
+		run_open = False
+	try:
+		open_cmd = config.get('Downloader', 'open_cmd')
+	except:
+		if run_open:
+			print "WARNING: 'run_open' is set, but 'open_cmd' doesn't exist - disabling auto open. Please configure 'open_cmd' in .zendesk.ini."
+			run_open = False
 	if "~" in download_directory:
 		pattern = re.compile('~')
 		download_directory = pattern.sub(os.path.expanduser("~"), download_directory)
@@ -164,4 +184,9 @@ if __name__ == "__main__":
 		else:
 			print "CS#{0} -- ERROR: {1}".format(ticket, case_info['error'])
 	print case_dir
+
+	if run_open:
+		cmd = "{0} {1}".format(open_cmd, case_dir)
+		subprocess.call(cmd,shell=True)
+
 	exit(0)

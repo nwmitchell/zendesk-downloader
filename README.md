@@ -27,4 +27,6 @@ url = https://company.zendesk.com
 
 [Downloader]
 download_directory = ~/Zendesk/
+run_open = true
+open_cmd = atom
 ```
