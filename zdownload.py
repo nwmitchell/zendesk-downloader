@@ -111,6 +111,8 @@ def extract_file(attachment, directory="."):
 			local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
 			cmd = "tar xf {0}/{1} -C {2} --exclude 'lastlog'".format(directory, local_filename, directory)
 			subprocess.call(cmd,shell=True)
+			cmd = "gunzip -qr {0}/var/log".format(filename)
+			subprocess.call(cmd,shell=True)
 		else:
 			print "        Already extracted"
 	elif file_extension == "tar":
