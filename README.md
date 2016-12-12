@@ -30,3 +30,10 @@ download_directory = ~/Zendesk/
 run_open = true
 open_cmd = atom
 ```
+
+## Known Issues
+```
+AttributeError: 'X509' object has no attribute '_x509'
+```
+This has been seen when the pyOpenSSL library needed updating:
+```pip install pyOpenSSL --upgrade```
