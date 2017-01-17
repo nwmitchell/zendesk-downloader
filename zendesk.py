@@ -1,4 +1,4 @@
-import inspect, logging, os, re, requests
+import inspect, logging, os, re, requests, subprocess
 
 class Zendesk:
     def __init__(self, username, password, baseurl):

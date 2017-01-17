@@ -51,6 +51,8 @@ def main():
     if "~" in download_directory:
         pattern = re.compile('~')
         download_directory = pattern.sub(os.path.expanduser("~"), download_directory)
+    if not download_directory.endswith('/'):
+        download_directory += '/'
     logger.debug("download_directory: {}".format(download_directory))
 
     zendesk = Zendesk(user, password, base_url)
