@@ -39,19 +39,19 @@ username | Zendesk username | yes
 password | Zendesk password | yes
 url | Zendesk URL | yes
 directory | Base directory path for downloads | yes
-path | Customizable path inside base directory | no, default is <org_name\>/\<case_id\>
+path | Customizable path inside base directory | no, default is org_name/case_id
 run_open | Run the open command after downloading and extracting | no, default is False
 open_command | Command to run if run_open is True | no
 
+_**NOTE:**_ It is recommended to use a token based authentication to Zendesk, and not store the user's password in plain text. See [this page](https://support.zendesk.com/hc/en-us/articles/226022787-Generating-a-new-API-token-) for information on generating API tokens. If using token based authentication, the username will be `user@company.com/token`.
+
 The path can be customized using the following variables:
+
 Name | Description
 ---- | -----------
 case_id | Case number
 org_name | Name of organization
 ord_id | Organization's unique identifier from Zendesk
-
-_**NOTE:**_ It is recommended to use a token based authentication to Zendesk, and not store the user's password in plain text. See [this page](https://support.zendesk.com/hc/en-us/articles/226022787-Generating-a-new-API-token-) for information on generating API tokens. If using token based authentication, the username will be `user@company.com/token`.
-
 
 ## Known Issues
 ```
