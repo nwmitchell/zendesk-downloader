@@ -39,7 +39,6 @@ def main():
         exit(1)
     with open(arguments['--config'], 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
-    logger.debug(cfg)
 
     # determine if run_open is defined and enabled
     try:
@@ -72,38 +71,41 @@ def main():
         logger.info("No case specified, downloading attachments for all cases with updates in the last {0} hours".format(arguments['--recent']))
         start_time = datetime.datetime.now() - datetime.timedelta(hours=int(arguments['--recent']))
         updated_tickets =  zendesk.getUpdatedTickets(start_time)
-        for ticket in updated_tickets:
-            case_info = zendesk.getCaseInfo(ticket)
-            if not "error" in case_info:
-                try:
-                    case_dir = "{}{}".format(cfg['downloader']['directory'], getCaseDirectory(case_info, cfg['downloader']['path']))
-                except:
-                    case_dir = "{0}{1}/{2}".format(cfg['downloader']['directory'], case_info['org_name'], case_info['case_id'])
-                logger.debug(case_dir)
-                zendesk.downloadAttachments(ticket, case_dir)
-            else:
-                logger.error("{}".format(case_info['error']))
+        logger.debug(updated_tickets)
+        if not "error" in updated_tickets:
+            for ticket in updated_tickets['ids']:
+                case_info = zendesk.getCaseInfo(ticket)
+                if not "error" in case_info:
+                    try:
+                        case_dir = "{}{}".format(cfg['downloader']['directory'], getCaseDirectory(case_info, cfg['downloader']['path']))
+                    except:
+                        case_dir = "{0}{1}/{2}".format(cfg['downloader']['directory'], case_info['org_name'], case_info['case_id'])
+                    logger.debug(case_dir)
+                    zendesk.downloadAttachments(ticket, case_dir)
+                else:
+                    logger.error("{}".format(case_info['error']))
+        else:
+            logger.error(updated_tickets['error'])
     else:
         ticket = arguments['--case']
         case_info = zendesk.getCaseInfo(ticket)
-        case_info['org_name'] = case_info['org_name'].replace("+","")
 
         if not "error" in case_info:
+            case_info['org_name'] = case_info['org_name'].replace("+","")
             try:
                 case_dir = "{}{}".format(cfg['downloader']['directory'], getCaseDirectory(case_info, cfg['downloader']['path']))
             except:
                 case_dir = "{0}{1}/{2}".format(cfg['downloader']['directory'], case_info['org_name'], case_info['case_id'])
             logger.debug(case_dir)
             zendesk.downloadAttachments(ticket, case_dir)
+            if run_open:
+                logger.debug("running open command")
+                cmd = "{0} {1}".format(open_cmd, case_dir)
+                subprocess.call(cmd,shell=True)
+
+            print "Attachments downloaded to: {}".format(case_dir)
         else:
             logger.error("CS#{}: {}".format(ticket, case_info['error']))
-
-        if run_open:
-            logger.debug("running open command")
-            cmd = "{0} {1}".format(open_cmd, case_dir)
-            subprocess.call(cmd,shell=True)
-
-        print "Attachments downloaded to: {}".format(case_dir)
 
 if __name__ == "__main__":
     # configure logger
