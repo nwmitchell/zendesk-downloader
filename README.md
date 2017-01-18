@@ -5,6 +5,7 @@ Download attachments associated with cases in Zendesk
  - pip via brew (OSX) or another method
  - requests - ```pip install requests```
  - docopts - ```pip install docopt```
+ - PyYAML - ```pip install PyYAML```
 
 ## Usage
 ```
