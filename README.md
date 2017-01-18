@@ -18,18 +18,40 @@ Options:
     --config CONFIGFILE             Provide a file containing credentials and settings [default: ~/.zendesk.ini]
 ```
 
-A .ini file will need to be created with credential, url, and download_directory information, by default the script will look for this file at `~/.zendesk.ini`. To specify a configuration file in a different location, use `--config` argument. Example **.zendesk.ini** contents:
+A .yml file will need to be created with credential, url, and download directory information. By default the script will look for this file at `~/.zendesk.yml`. To specify a configuration file in a different location, use the `--config` argument. Example **.zendesk.yml** contents:
 ```
-[Credentials]
-user = user@company.com
-password = password
-url = https://company.zendesk.com
+credentials:
+  username: user@company.com
+  password: password
+  url: https://company.zendesk.com
 
-[Downloader]
-download_directory = ~/Zendesk/
-run_open = true
-open_cmd = atom
+downloader:
+  directory: ~/zendesk/
+  path: org_name_org_id/case_id
+  run_open = true
+  open_command = atom
 ```
+
+## Configuration Options
+Configuration | Value | Required?
+------------- | ----- | ---------
+username | Zendesk username | yes
+password | Zendesk password | yes
+url | Zendesk URL | yes
+directory | Base directory path for downloads | yes
+path | Customizable path inside base directory | no, default is <org_name\>/\<case_id\>
+run_open | Run the open command after downloading and extracting | no, default is False
+open_command | Command to run if run_open is True | no
+
+The path can be customized using the following variables:
+Name | Description
+---- | -----------
+case_id | Case number
+org_name | Name of organization
+ord_id | Organization's unique identifier from Zendesk
+
+_**NOTE:**_ It is recommended to use a token based authentication to Zendesk, and not store the user's password in plain text. See [this page](https://support.zendesk.com/hc/en-us/articles/226022787-Generating-a-new-API-token-) for information on generating API tokens. If using token based authentication, the username will be `user@company.com/token`.
+
 
 ## Known Issues
 ```

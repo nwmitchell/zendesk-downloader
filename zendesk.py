@@ -1,4 +1,5 @@
 import inspect, logging, os, re, requests, subprocess
+from pprint import pprint
 
 class Zendesk:
     def __init__(self, username, password, baseurl):
@@ -21,7 +22,7 @@ class Zendesk:
         if "error" in result:
             case_info['error'] = result['error']
         else:
-            case_info['id'] = result['ticket']['id']
+            case_info['case_id'] = result['ticket']['id']
             case_info['org_id'] = result['ticket']['organization_id']
 
             if case_info['org_id'] != "None":
@@ -59,9 +60,9 @@ class Zendesk:
 
     def getUpdatedTickets(self, start_time):
         ticket_list = []
-        url = "{0}/api/v2/incremental/tickets.json?start_time={1}".format(base_url, start_time.strftime("%s"))
+        url = "{0}/api/v2/incremental/tickets.json?start_time={1}".format(self.baseurl, start_time.strftime("%s"))
         #result = zenpy.tickets.incremental(start_time=start_time)
-        result = requests.get(url, auth=(user, password)).json()
+        result = requests.get(url, auth=(self.username, self.password)).json()
         for ticket in result['tickets']:
             ticket_list.append(ticket['id'])
         return ticket_list
