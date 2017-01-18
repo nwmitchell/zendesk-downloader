@@ -28,8 +28,8 @@ credentials:
 downloader:
   directory: ~/zendesk/
   path: org_name_org_id/case_id
-  run_open = true
-  open_command = atom
+  run_open: true
+  open_command: atom
 ```
 
 ## Configuration Options
@@ -51,7 +51,7 @@ Name | Description
 ---- | -----------
 case_id | Case number
 org_name | Name of organization
-ord_id | Organization's unique identifier from Zendesk
+org_id | Organization's unique identifier from Zendesk
 
 ## Known Issues
 ```
