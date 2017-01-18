@@ -59,12 +59,15 @@ class Zendesk:
         return attachment_list
 
     def getUpdatedTickets(self, start_time):
-        ticket_list = []
+        ticket_list = {}
         url = "{0}/api/v2/incremental/tickets.json?start_time={1}".format(self.baseurl, start_time.strftime("%s"))
-        #result = zenpy.tickets.incremental(start_time=start_time)
         result = requests.get(url, auth=(self.username, self.password)).json()
-        for ticket in result['tickets']:
-            ticket_list.append(ticket['id'])
+        if "error" in result:
+            ticket_list['error'] = result['error']
+        else:
+            ticket_list['ids'] = []
+            for ticket in result['tickets']:
+                ticket_list['ids'].append(ticket['id'])
         return ticket_list
 
     def downloadAttachments(self, ticket_id, directory):
