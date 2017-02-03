@@ -5,6 +5,10 @@ Download attachments associated with cases in Zendesk
  - pip via brew (OSX) or another method
 
 #### Python Modules
+ - Via setup.py - ```python setup.py install```
+
+**or**
+
  - Using provided requirements.txt - ```pip install -r requirements.txt```
 
 **or**
