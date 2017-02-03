@@ -3,7 +3,8 @@ Download attachments associated with cases in Zendesk
 
 ## Pre-reqs
  - pip via brew (OSX) or another method
-### Python Modules
+
+#### Python Modules
  - Using provided requirements.txt - ```pip install -r requirements.txt```
 
 **OR**
