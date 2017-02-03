@@ -3,6 +3,11 @@ Download attachments associated with cases in Zendesk
 
 ## Pre-reqs
  - pip via brew (OSX) or another method
+### Python Modules
+ - Using provided requirements.txt - ```pip install -r requirements.txt```
+
+**OR**
+
  - requests - ```pip install requests```
  - docopt - ```pip install docopt```
  - PyYAML - ```pip install PyYAML```
