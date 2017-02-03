@@ -7,7 +7,7 @@ Download attachments associated with cases in Zendesk
 #### Python Modules
  - Using provided requirements.txt - ```pip install -r requirements.txt```
 
-**OR**
+**or**
 
  - requests - ```pip install requests```
  - docopt - ```pip install docopt```
