@@ -140,7 +140,7 @@ class Zendesk:
                 local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
                 cmd = "tar xf {0}/{1} -C {2} --exclude 'lastlog'".format(directory, local_filename, directory)
                 subprocess.call(cmd,shell=True)
-                cmd = "gunzip -qr {0}/{1}/var/log".format(directory, filename)
+                cmd = "gunzip -qrf {0}/{1}/var/log".format(directory, filename)
                 subprocess.call(cmd,shell=True)
             else:
                 self.logger.info("Already extracted")
@@ -148,7 +148,7 @@ class Zendesk:
             if not os.path.exists("{0}/{1}".format(directory, filename)):
                 self.logger.info("Extracting...")
                 local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
-                cmd = "tar xf {0}/{1} -C {2}".format(directory, local_filename, directory)
+                cmd = "tar xf {0}/{1} -C {2} --exclude 'lastlog'".format(directory, local_filename, directory)
                 subprocess.call(cmd,shell=True)
         else:
             self.logger.info("Not a cl_support, will not extract")
