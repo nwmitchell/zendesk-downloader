@@ -134,7 +134,7 @@ class Zendesk:
 
     def __extractFile(self, attachment, directory="."):
         filename, file_extension = self.__splitext(attachment['name'])
-        if "cl_support" in filename and file_extension == "tar.xz":
+        if "cl_support" in filename and (file_extension == "tar.xz" or file_extension == "txz"):
             if not os.path.exists("{0}/{1}".format(directory, filename)):
                 self.logger.info("Extracting...")
                 local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
