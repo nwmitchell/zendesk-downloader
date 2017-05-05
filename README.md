@@ -20,13 +20,14 @@ Download attachments associated with cases in Zendesk
 ## Usage
 ```
 Usage:
-    download.py [options]
+    zdownload.py [options]
 
 Options:
     -h, --help                      Show this help message and exit.
     -r HOURS, --recent HOURS        Run downloader for any cases with modifications in last X hours [default: 24].
     -c CASENUM, --case CASENUM      Run downloader for specific cases.
-    --config CONFIGFILE             Provide a file containing credentials and settings [default: ~/.zendesk.ini]
+    -l LEVEL, --level LEVEL         Logging level during execution. Available options: DEBUG, INFO, WARNING, ERROR (default), CRITICAL [default: WARNING]
+    --config CONFIGFILE             Provide a file containing credentials and settings [default: ~/.zendesk.yml]
 ```
 
 A .yml file will need to be created with credential, url, and download directory information. By default the script will look for this file at `~/.zendesk.yml`. To specify a configuration file in a different location, use the `--config` argument. Example **.zendesk.yml** contents:
