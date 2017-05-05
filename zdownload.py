@@ -2,7 +2,7 @@
 
 """
 Usage:
-    download.py [options]
+    zdownload.py [options]
 
 Options:
     -h, --help                      Show this help message and exit.
