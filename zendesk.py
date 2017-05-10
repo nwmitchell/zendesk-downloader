@@ -143,6 +143,13 @@ class Zendesk:
     def __extractFile(self, filename, directory="."):
         self.logger.debug(filename)
         extracted_name, file_extension = self.__splitext(filename)
+        if "." in extracted_name:
+            with_id = extracted_name.split(".", 1)
+            without_id = "_".join(with_id[0].split("_")[:-1])
+            extracted_name = ".".join((without_id, with_id[1]))
+        else:
+            extracted_name = "_".join(extracted_name.split("_")[:-1])
+        self.logger.info("{}".format(extracted_name))
         if not os.path.exists("{0}/{1}".format(directory, extracted_name)):
             self.logger.info("Extracting...")
             if file_extension == "gz":
@@ -165,7 +172,7 @@ class Zendesk:
                             self.logger.info(item)
                             self.__extractFile(item, directory)
         else:
-            self.logger.info("File already extracted")
+            self.logger.info("Already extracted")
 
     def __splitext(self, path):
         #for ext in ['.tar.xz']:

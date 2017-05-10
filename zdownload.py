@@ -65,8 +65,12 @@ def main():
         cfg['downloader']['directory'] += '/'
     logger.debug("download directory: {}".format(cfg['downloader']['directory']))
 
-    if 'extensions' in cfg['downloader']:
-        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], cfg['downloader']['extensions'])
+    if 'extensions' in cfg['downloader'] and 'exclude' in cfg['downloader']:
+        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], extensions=cfg['downloader']['extensions'], exclude=cfg['downloader']['exclude'])
+    elif 'extensions' in cfg['downloader']:
+        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], extensions=cfg['downloader']['extensions'])
+    elif 'exclude' in cfg['downloader']:
+        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], exclude=cfg['downloader']['exclude'])
     else:
         zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'])
 
