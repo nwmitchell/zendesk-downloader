@@ -8,7 +8,7 @@ Options:
     -h, --help                      Show this help message and exit.
     -r HOURS, --recent HOURS        Run downloader for any cases with modifications in last X hours [default: 24].
     -c CASENUM, --case CASENUM      Run downloader for specific cases.
-    -l LEVEL, --level LEVEL         Logging level during execution. Available options: DEBUG, INFO, WARNING, ERROR (default), CRITICAL [default: WARNING]
+    -l LEVEL, --level LEVEL         Logging level during execution. Available options: DEBUG, INFO(default), WARNING, ERROR, CRITICAL [default: INFO]
     --config CONFIGFILE             Provide a file containing credentials and settings [default: ~/.zendesk.yml]
 """
 
@@ -65,7 +65,10 @@ def main():
         cfg['downloader']['directory'] += '/'
     logger.debug("download directory: {}".format(cfg['downloader']['directory']))
 
-    zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'])
+    if 'extensions' in cfg['downloader']:
+        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], cfg['downloader']['extensions'])
+    else:
+        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'])
 
     if '{0}'.format(arguments['--case']) == 'None':
         logger.info("No case specified, downloading attachments for all cases with updates in the last {0} hours".format(arguments['--recent']))

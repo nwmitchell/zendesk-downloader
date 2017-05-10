@@ -2,11 +2,14 @@ import inspect, logging, os, re, requests, subprocess
 from pprint import pprint
 
 class Zendesk:
-    def __init__(self, username, password, baseurl):
+    def __init__(self, username, password, baseurl, extensions=["gz", "tar", "tar.xz", "txz", "zip"]):
         self.username = username
         self.password = password
         self.baseurl = baseurl
+        self.extensions = extensions
         self.logger = logging.getLogger()
+        self.logger.debug(self.baseurl)
+        self.logger.debug(self.extensions)
 
     def getState(self, ticket_id):
         url = "{0}/api/v2/tickets/{1}.json".format(self.baseurl, caseid)
@@ -76,7 +79,12 @@ class Zendesk:
         if attachment_list:
             for attachment in attachment_list:
                 self.__downloadFile(attachment, directory)
-                self.__extractFile(attachment, directory)
+                filename, file_extension = self.__splitext(attachment['name'])
+                if file_extension in self.extensions:
+                    filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
+                    self.__extractFile(filename, directory)
+                else:
+                    self.logger.debug("File extension is not in extension list, will not extract")
 
     def getSolveClassification(self, ticket_id):
         url = "{0}/api/v2/tickets/{1}.json".format(self.baseurl, caseid)
@@ -132,26 +140,32 @@ class Zendesk:
             self.logger.info("Already downloaded")
         return local_filename
 
-    def __extractFile(self, attachment, directory="."):
-        filename, file_extension = self.__splitext(attachment['name'])
-        if "cl_support" in filename and (file_extension == "tar.xz" or file_extension == "txz"):
-            if not os.path.exists("{0}/{1}".format(directory, filename)):
-                self.logger.info("Extracting...")
-                local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
-                cmd = "tar xf {0}/{1} -C {2} --exclude 'lastlog'".format(directory, local_filename, directory)
-                subprocess.call(cmd,shell=True)
-                cmd = "gunzip -qrf {0}/{1}/var/log".format(directory, filename)
-                subprocess.call(cmd,shell=True)
+    def __extractFile(self, filename, directory="."):
+        self.logger.debug(filename)
+        extracted_name, file_extension = self.__splitext(filename)
+        if not os.path.exists("{0}/{1}".format(directory, extracted_name)):
+            self.logger.info("Extracting...")
+            if file_extension == "gz":
+                cmd = "gunzip {}/{}".format(directory, filename)
             else:
-                self.logger.info("Already extracted")
-        elif file_extension == "tar":
-            if not os.path.exists("{0}/{1}".format(directory, filename)):
-                self.logger.info("Extracting...")
-                local_filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
-                cmd = "tar xf {0}/{1} -C {2} --exclude 'lastlog'".format(directory, local_filename, directory)
-                subprocess.call(cmd,shell=True)
+                cmd = cmd = "tar xvf {1}/{0} -C {1} --exclude 'lastlog'".format(filename, directory)
+            self.logger.debug(cmd)
+            try:
+                extracted_files = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT)
+            except:
+                extracted_files = ""
+                self.logger.error("Encountered error running '{}'".format(cmd))
+            if extracted_files != "":
+                self.logger.debug(extracted_files)
+                for item in extracted_files.split("\n"):
+                    item = item.split(" ")[-1]
+                    if item != "":
+                        garbage, file_extension = self.__splitext(item)
+                        if file_extension in self.extensions:
+                            self.logger.info(item)
+                            self.__extractFile(item, directory)
         else:
-            self.logger.info("Not a cl_support, will not extract")
+            self.logger.info("File already extracted")
 
     def __splitext(self, path):
         #for ext in ['.tar.xz']:
