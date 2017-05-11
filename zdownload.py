@@ -12,7 +12,7 @@ Options:
     --config CONFIGFILE             Provide a file containing credentials and settings [default: ~/.zendesk.yml]
 """
 
-import datetime, json, logging, os, re, requests, subprocess, sys, yaml
+import datetime, json, logging, os, re, requests, subprocess, sys, unicodedata, yaml
 from docopt import docopt
 from zendesk import Zendesk
 
@@ -99,6 +99,7 @@ def main():
 
         if not "error" in case_info:
             case_info['org_name'] = case_info['org_name'].replace("+","")
+            case_info['org_name'] = unicodedata.normalize('NFKC', case_info['org_name']).encode('ascii', 'ignore')
             try:
                 case_dir = "{}{}".format(cfg['downloader']['directory'], getCaseDirectory(case_info, cfg['downloader']['path']))
             except:
