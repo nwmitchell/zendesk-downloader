@@ -82,6 +82,8 @@ class Zendesk:
                 filename, file_extension = self.__splitext(attachment['name'])
                 if file_extension in self.extensions:
                     filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
+                    self.logger.debug(directory)
+                    self.logger.debug(filename)
                     self.__extractFile(filename, directory)
                 else:
                     self.logger.debug("File extension is not in extension list, will not extract")
@@ -149,11 +151,17 @@ class Zendesk:
             extracted_name = ".".join((without_id, with_id[1]))
         else:
             extracted_name = "_".join(extracted_name.split("_")[:-1])
-        self.logger.info("{}".format(extracted_name))
+        self.logger.debug("EXTRACTED_NAME: {}".format(extracted_name))
         if not os.path.exists("{0}/{1}".format(directory, extracted_name)):
             self.logger.info("Extracting...")
             if file_extension == "gz":
-                cmd = "gunzip {}/{}".format(directory, filename)
+                self.logger.debug(directory)
+                self.logger.debug(filename)
+                cmd = "gunzip -f {}/{}".format(directory, filename)
+            elif file_extension == "zip":
+                self.logger.debug(directory)
+                self.logger.debug(filename)
+                cmd = "unzip -o {0}/{1} -d {0}".format(directory, filename)
             else:
                 cmd = cmd = "tar xvf {1}/{0} -C {1} --exclude 'lastlog'".format(filename, directory)
             self.logger.debug(cmd)
@@ -165,11 +173,14 @@ class Zendesk:
             if extracted_files != "":
                 self.logger.debug(extracted_files)
                 for item in extracted_files.split("\n"):
-                    item = item.split(" ")[-1]
-                    if item != "":
+                    item = item.rstrip().split(" ")[-1]
+                    if item.startswith("/"):
+                        item = item.split("/")[-1]
+                    if item != "" and item != filename:
                         garbage, file_extension = self.__splitext(item)
                         if file_extension in self.extensions:
-                            self.logger.info(item)
+                            self.logger.info("{}".format(item))
+                            self.logger.debug(directory)
                             self.__extractFile(item, directory)
         else:
             self.logger.info("Already extracted")
