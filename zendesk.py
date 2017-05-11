@@ -154,6 +154,10 @@ class Zendesk:
         self.logger.debug("EXTRACTED_NAME: {}".format(extracted_name))
         if not os.path.exists("{0}/{1}".format(directory, extracted_name)):
             self.logger.info("Extracting...")
+            if "/" in filename:
+                tmp = filename.split("/")
+                filename = tmp[-1]
+                directory = "/".join((directory, "/".join(tmp[:-1])))
             if file_extension == "gz":
                 self.logger.debug(directory)
                 self.logger.debug(filename)
@@ -163,7 +167,7 @@ class Zendesk:
                 self.logger.debug(filename)
                 cmd = "unzip -o {0}/{1} -d {0}".format(directory, filename)
             else:
-                cmd = cmd = "tar xvf {1}/{0} -C {1} --exclude 'lastlog'".format(filename, directory)
+                cmd = "tar xvf {1}/{0} -C {1} --exclude 'lastlog'".format(filename, directory)
             self.logger.debug(cmd)
             try:
                 extracted_files = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT)
