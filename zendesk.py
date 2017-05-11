@@ -165,7 +165,7 @@ class Zendesk:
             elif file_extension == "zip":
                 self.logger.debug(directory)
                 self.logger.debug(filename)
-                cmd = "unzip -o {0}/{1} -d {0}".format(directory, filename)
+                cmd = "unzip -P 'noop' -o {0}/{1} -d {0}".format(directory, filename)
             else:
                 cmd = "tar xvf {1}/{0} -C {1} --exclude 'lastlog'".format(filename, directory)
             self.logger.debug(cmd)
