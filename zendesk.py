@@ -2,10 +2,11 @@ import inspect, logging, os, re, requests, subprocess
 from pprint import pprint
 
 class Zendesk:
-    def __init__(self, username, password, baseurl, extensions=["gz", "tar", "tar.xz", "txz", "zip"]):
+    def __init__(self, username, password, baseurl, extensions=["gz", "tar", "tar.xz", "txz", "zip"], exclude=[]):
         self.username = username
         self.password = password
         self.baseurl = baseurl
+        self.exclude = exclude
         self.extensions = extensions
         self.logger = logging.getLogger()
         self.logger.debug(self.baseurl)
@@ -78,15 +79,20 @@ class Zendesk:
         attachment_list = self.getAttachmentList(ticket_id)
         if attachment_list:
             for attachment in attachment_list:
-                self.__downloadFile(attachment, directory)
+                self.logger.info(attachment['name'])
                 filename, file_extension = self.__splitext(attachment['name'])
-                if file_extension in self.extensions:
-                    filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
-                    self.logger.debug(directory)
-                    self.logger.debug(filename)
-                    self.__extractFile(filename, directory)
+                self.logger.debug(file_extension)
+                if not file_extension in self.exclude:
+                    self.__downloadFile(attachment, directory)
+                    if file_extension in self.extensions:
+                        filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
+                        self.logger.debug(directory)
+                        self.logger.debug(filename)
+                        self.__extractFile(filename, directory)
+                    else:
+                        self.logger.debug("File extension is not in extension list, will not extract")
                 else:
-                    self.logger.debug("File extension is not in extension list, will not extract")
+                    self.logger.info("Attachment extension ({}) in exclude list ({}), ignoring".format(file_extension, self.exclude))
 
     def getSolveClassification(self, ticket_id):
         url = "{0}/api/v2/tickets/{1}.json".format(self.baseurl, caseid)
@@ -126,7 +132,7 @@ class Zendesk:
             local_filename = "{0}_{1}.{2}.{3}".format(filename.split(".", 1)[0], attachment['id'], filename.split(".", 1)[1], file_extension)
         else:
             local_filename = "{0}_{1}.{2}".format(filename.split(".", 1)[0], attachment['id'], file_extension)
-        self.logger.info("{}".format(local_filename))
+        self.logger.debug("{}".format(local_filename))
         if not os.path.exists("{0}/{1}".format(directory, local_filename)):
             self.logger.info("Downloading...")
             if not os.path.exists(directory):
