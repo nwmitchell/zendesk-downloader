@@ -2,15 +2,27 @@ import inspect, logging, os, re, requests, subprocess
 from pprint import pprint
 
 class Zendesk:
-    def __init__(self, username, password, baseurl, extensions=["gz", "tar", "tar.xz", "txz", "zip"], exclude=[]):
+    def __init__(self, username, password, baseurl, options={}):
         self.username = username
         self.password = password
-        self.baseurl = baseurl
-        self.exclude = exclude
-        self.extensions = extensions
         self.logger = logging.getLogger()
+        self.baseurl = baseurl
         self.logger.debug(self.baseurl)
+        if 'exclude' in options:
+            self.exclude = options['exclude']
+        else:
+            self.exclude = []
+        self.logger.debug(self.exclude)
+        if 'extensions' in options:
+            self.extensions = options['extensions']
+        else:
+            self.extensions = ["gz", "tar", "tar.xz", "txz", "zip"]
         self.logger.debug(self.extensions)
+        if 'rm_after_extract' in options:
+            self.rm_after_extract = options['rm_after_extract']
+        else:
+            self.rm_after_extract = False
+        self.logger.debug(self.rm_after_extract)
 
     def getState(self, ticket_id):
         url = "{0}/api/v2/tickets/{1}.json".format(self.baseurl, caseid)
@@ -181,6 +193,13 @@ class Zendesk:
                 extracted_files = ""
                 self.logger.error("Encountered error running '{}'".format(cmd))
             if extracted_files != "":
+                if self.rm_after_extract:
+                    cmd = "rm {0}/{1}".format(directory, filename)
+                    self.logger.debug("Remove after extract set, executing '{}'".format(cmd))
+                    try:
+                        subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT)
+                    except:
+                        self.logger.error("Failed to remove archive file after extracting!")
                 self.logger.debug(extracted_files)
                 for item in extracted_files.split("\n"):
                     item = item.rstrip().split(" ")[-1]

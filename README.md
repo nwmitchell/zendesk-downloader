@@ -56,6 +56,7 @@ run_open | Run the open command after downloading and extracting | no, default i
 open_command | Command to run if run_open is True | no
 exclude | List of extentions to exclude when downloading. Provided in Python list format | no, default is to exclude nothing
 extensions | List of extensions to run extraction on. Provided in Python list format. | no, default is ["gz", "tar", "tar.xz", "txz", "zip"]
+rm_after_extract | Remove the archive file after extraction. | no, default is False
 
 _**NOTE:**_ It is recommended to use a token based authentication to Zendesk, and not store the user's password in plain text. See [this page](https://support.zendesk.com/hc/en-us/articles/226022787-Generating-a-new-API-token-) for information on generating API tokens. If using token based authentication, the username will be `user@company.com/token`.
 

@@ -65,14 +65,15 @@ def main():
         cfg['downloader']['directory'] += '/'
     logger.debug("download directory: {}".format(cfg['downloader']['directory']))
 
-    if 'extensions' in cfg['downloader'] and 'exclude' in cfg['downloader']:
-        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], extensions=cfg['downloader']['extensions'], exclude=cfg['downloader']['exclude'])
-    elif 'extensions' in cfg['downloader']:
-        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], extensions=cfg['downloader']['extensions'])
-    elif 'exclude' in cfg['downloader']:
-        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], exclude=cfg['downloader']['exclude'])
-    else:
-        zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'])
+    options = {}
+    if 'extensions' in cfg['downloader']:
+        options['extensions'] = cfg['downloader']['extensions']
+    if 'exclude' in cfg['downloader']:
+        options['exclude'] = cfg['downloader']['exclude']
+    if 'rm_after_extract' in cfg['downloader']:
+        options['rm_after_extract'] = cfg['downloader']['rm_after_extract']
+
+    zendesk = Zendesk(cfg['credentials']['username'], cfg['credentials']['password'], cfg['credentials']['url'], options=options)
 
     if '{0}'.format(arguments['--case']) == 'None':
         logger.info("No case specified, downloading attachments for all cases with updates in the last {0} hours".format(arguments['--recent']))
