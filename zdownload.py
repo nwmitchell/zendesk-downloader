@@ -113,7 +113,7 @@ def main():
                 cmd = "{0} {1}".format(open_cmd, case_dir)
                 subprocess.call(cmd,shell=True)
 
-            print "Attachments downloaded to: {}".format(case_dir)
+            print "Attachments downloaded to:\n{}".format(case_dir)
         else:
             logger.error("CS#{}: {}".format(ticket, case_info['error']))
 
