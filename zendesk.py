@@ -60,18 +60,22 @@ class Zendesk:
 
     def getAttachmentList(self, ticket_id):
         attachment_list = []
+        # It is quite possible the comments span more than one page.
+        # This loop will continue paging through results until next_page is null
         url = "{0}/api/v2/tickets/{1}/comments.json".format(self.baseurl, ticket_id)
-        result = requests.get(url, auth=(self.username, self.password)).json()
-        for comment in result['comments']:
-            if comment['attachments']:
-                key = 0
-                for item in comment['attachments']:
-                    attachment = {}
-                    attachment['id'] = comment['attachments'][key]['id']
-                    attachment['name'] = comment['attachments'][key]['file_name']
-                    attachment['url'] = comment['attachments'][key]['content_url']
-                    attachment_list.append(attachment.copy())
-                    key+=1
+        while url:
+            result = requests.get(url, auth=(self.username, self.password)).json()
+            for comment in result['comments']:
+                if comment['attachments']:
+                    key = 0
+                    for item in comment['attachments']:
+                        attachment = {}
+                        attachment['id'] = comment['attachments'][key]['id']
+                        attachment['name'] = comment['attachments'][key]['file_name']
+                        attachment['url'] = comment['attachments'][key]['content_url']
+                        attachment_list.append(attachment.copy())
+                        key+=1
+            url = result['next_page']
         return attachment_list
 
     def getUpdatedTickets(self, start_time):
