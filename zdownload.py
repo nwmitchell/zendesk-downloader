@@ -84,6 +84,8 @@ def main():
             for ticket in updated_tickets['ids']:
                 case_info = zendesk.getCaseInfo(ticket)
                 if not "error" in case_info:
+                    if case_info['org_name'] == "None":
+                        case_info['org_name'] = u"None"
                     case_info['org_name'] = case_info['org_name'].replace("+","")
                     case_info['org_name'] = unicodedata.normalize('NFKC', case_info['org_name']).encode('ascii', 'ignore')
                     try:
