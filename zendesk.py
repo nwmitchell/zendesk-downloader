@@ -16,7 +16,7 @@ class Zendesk:
         if 'extensions' in options:
             self.extensions = options['extensions']
         else:
-            self.extensions = ["gz", "tar", "tar.xz", "txz", "zip"]
+            self.extensions = ["gz", "tar", "tar.xz", "tbz", "txz", "zip"]
         self.logger.debug(self.extensions)
         if 'rm_after_extract' in options:
             self.rm_after_extract = options['rm_after_extract']
