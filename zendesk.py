@@ -93,7 +93,9 @@ class Zendesk:
     def downloadAttachments(self, ticket_id, directory):
         self.logger.info("CS#{0}".format(ticket_id))
         attachment_list = self.getAttachmentList(ticket_id)
+        filename_list = []
         if attachment_list:
+            self.logger.debug("Attachments: {}".format(attachment_list))
             for attachment in attachment_list:
                 self.logger.info(attachment['name'])
                 filename, file_extension = self.__splitext(attachment['name'])
@@ -104,11 +106,15 @@ class Zendesk:
                         filename = "{0}_{1}.{2}".format(attachment['name'].split(".", 1)[0], attachment['id'], attachment['name'].split(".", 1)[-1])
                         self.logger.debug(directory)
                         self.logger.debug(filename)
-                        self.__extractFile(filename, directory)
+                        extracted_file = self.__extractFile(filename, directory)
+                        filename_list.append(extracted_file)
                     else:
                         self.logger.debug("File extension is not in extension list, will not extract")
+                        filename_list.append(attachment['name'])
                 else:
                     self.logger.info("Attachment extension ({}) in exclude list ({}), ignoring".format(file_extension, self.exclude))
+                    filename_list.append(attachment['name'])
+        return filename_list
 
     def getSolveClassification(self, ticket_id):
         url = "{0}/api/v2/tickets/{1}.json".format(self.baseurl, caseid)
