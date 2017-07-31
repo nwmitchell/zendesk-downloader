@@ -217,6 +217,7 @@ class Zendesk:
                             self.__extractFile(item, directory)
         else:
             self.logger.info("Already extracted")
+        return extracted_name
 
     def __splitext(self, path):
         #for ext in ['.tar.xz']:
