@@ -53,6 +53,7 @@ def main():
 
     global cfg
     global run_open
+    global open_cmd
     global zendesk
 
     # read in YAML configuration file
