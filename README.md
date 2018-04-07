@@ -1,3 +1,6 @@
+## Build Status
+[![Build Status](https://travis-ci.org/nwmitchell/zendesk-downloader.svg?branch=master)](https://travis-ci.org/nwmitchell/zendesk-downloader)
+
 # zendesk-downloader
 Download attachments associated with cases in Zendesk
 
