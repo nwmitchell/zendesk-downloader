@@ -1,0 +1,9 @@
+language: python
+before_install:
+- openssl aes-256-cbc -K $encrypted_ce6702f73085_key -iv $encrypted_ce6702f73085_iv -in .travis/config.yml.enc -out .travis/config.yml -d
+install:
+- pip install -r requirements.txt
+script:
+- "./zdownload.py -h"
+- "./zdownload.py -c 42 --config .travis/config.yml"
+- "./zdownload.py --config .travis/config.yml"
