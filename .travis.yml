@@ -4,6 +4,7 @@ before_install:
 install:
 - pip install -r requirements.txt
 script:
-- "./zdownload.py -h"
-- "./zdownload.py -c 42 --config .travis/config.yml"
-- "./zdownload.py --config .travis/config.yml"
+- ./zdownload.py -h
+- ./zdownload.py -c 42 --config .travis/config.yml
+- ./zdownload.py --config .travis/config.yml
+- [ 4 == `find ~/zendesk/42_None -name "cl_support*" -type d | wc -l` ]
