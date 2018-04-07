@@ -8,3 +8,4 @@ script:
 - ./zdownload.py -c 42 --config .travis/config.yml
 - ./zdownload.py --config .travis/config.yml
 - if [ `find ~/zendesk/42_None -name "cl_support*" -type d | wc -l` -ne 4 ]; then exit 1; fi
+- if [ `find ~/zendesk/42_None -name "*.gz" | wc -l` -ne 0 ]; then exit 1; fi
