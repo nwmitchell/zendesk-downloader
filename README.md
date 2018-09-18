@@ -1,5 +1,5 @@
-## Build Status
-[![Build Status](https://travis-ci.org/nwmitchell/zendesk-downloader.svg?branch=master)](https://travis-ci.org/nwmitchell/zendesk-downloader)
+### No longer maintained
+_**Please update to the new repo: https://gitlab.com/nwmitchell/zendesk-downloader**_
 
 # zendesk-downloader
 Download attachments associated with cases in Zendesk
